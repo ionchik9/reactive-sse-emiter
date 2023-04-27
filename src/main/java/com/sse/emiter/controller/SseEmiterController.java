@@ -5,10 +5,7 @@ import com.sse.emiter.model.GptMessage;
 import com.sse.emiter.model.GptResponse;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.ServerSentEvent;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 
 import java.time.Duration;
@@ -27,10 +24,10 @@ public class SseEmiterController {
 
 
     @PostMapping(path = "/stream-gpt", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<GptResponse> streamGpt(GptMessage message) {
+    public Flux<GptResponse> streamGpt(@RequestBody GptMessage message) {
         return Flux.interval(Duration.ofSeconds(2))
                 .take(10) // limit the emissions to 10
-                .map(sequence -> new GptResponse(List.of(new GptChoice(new GptMessage("assistant", message+ " now is " + LocalTime.now()), null, 0))));
+                .map(sequence -> new GptResponse(List.of(new GptChoice(new GptMessage("assistant", message.content()+ " now is " + LocalTime.now()), null, 0))));
     }
 
 
