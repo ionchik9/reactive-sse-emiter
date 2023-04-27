@@ -6,6 +6,7 @@ import com.sse.emiter.model.GptResponse;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
@@ -24,8 +25,8 @@ public class SseEmiterController {
                 .map(sequence -> "Flux - " + LocalTime.now());
     }
 
-    @GetMapping(path = "/stream-gpt", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<GptResponse> streamGpt() {
+    @PostMapping(path = "/stream-gpt", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<GptResponse> streamGpt(GptMessage message) {
         return Flux.interval(Duration.ofSeconds(2))
                 .map(sequence -> new GptResponse(List.of(new GptChoice(new GptMessage("assistant", "now is " + LocalTime.now()), null, 0))));
     }
