@@ -25,10 +25,12 @@ public class SseEmiterController {
                 .map(sequence -> "Flux - " + LocalTime.now());
     }
 
+
     @PostMapping(path = "/stream-gpt", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<GptResponse> streamGpt(GptMessage message) {
         return Flux.interval(Duration.ofSeconds(2))
-                .map(sequence -> new GptResponse(List.of(new GptChoice(new GptMessage("assistant", "now is " + LocalTime.now()), null, 0))));
+                .take(10) // limit the emissions to 10
+                .map(sequence -> new GptResponse(List.of(new GptChoice(new GptMessage("assistant", message+ " now is " + LocalTime.now()), null, 0))));
     }
 
 
