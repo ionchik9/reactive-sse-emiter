@@ -62,7 +62,7 @@ public class SseEmiterController {
 
          var eventStream = client.post()
                 .uri("/stream-gpt")
-                .body(BodyInserters.fromValue(Map.of("content", "dough")))
+                .body(BodyInserters.fromValue(Map.of("content", request)))
                 .retrieve()
                 .bodyToFlux(type)
                  .doOnNext(content -> log.info("Received SSE event: name[{}], id [{}], content[{}]",
