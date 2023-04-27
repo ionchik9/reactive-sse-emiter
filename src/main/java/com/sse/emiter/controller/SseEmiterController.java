@@ -1,5 +1,8 @@
 package com.sse.emiter.controller;
 
+import com.sse.emiter.model.MessageRequest;
+import com.sse.emiter.service.OpenAICompletionService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -11,7 +14,9 @@ import java.util.concurrent.Executors;
 
 @RestController
 @RequestMapping("/sse-server")
+@RequiredArgsConstructor
 public class SseEmiterController {
+    private final OpenAICompletionService openAICompletionService;
 
 
 
@@ -33,6 +38,30 @@ public class SseEmiterController {
                 emitter.completeWithError(ex);
             }
         });
+        return emitter;
+    }
+
+    @GetMapping("/gpt")
+    public SseEmitter streamSse(MessageRequest request) {
+        SseEmitter emitter = new SseEmitter();
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+
+        executorService.execute(() -> {
+            try {
+                while (true) {
+                    String response = openAICompletionService.getCompletionResult(request.content()).get();
+                    SseEmitter.SseEventBuilder event = SseEmitter.event()
+                            .data(response)
+                            .name("sse event");
+                    emitter.send(event);
+                }
+            } catch (Exception ex) {
+                emitter.completeWithError(ex);
+            } finally {
+                emitter.complete();
+            }
+        });
+
         return emitter;
     }
 }
