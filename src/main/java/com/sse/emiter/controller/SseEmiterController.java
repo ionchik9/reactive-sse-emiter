@@ -20,24 +20,6 @@ public class SseEmiterController {
     @PostMapping(value = "/stream-gpt-react", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<GptResponse> streamSse(@RequestBody MessageRequest request) {
 
-//		WebClient client = WebClient.create("http://localhost:8080/sse-server");
-//
-//        ParameterizedTypeReference<GptResponse> type
-//                = new ParameterizedTypeReference<>() {
-//        };
-//
-//         var eventStream = client.post()
-//                .uri("/stream-gpt")
-//                .body(BodyInserters.fromValue(Map.of("content", request.content())))
-//                .retrieve()
-//                .bodyToFlux(type)
-//                 .doOnNext(content -> log.info("Received SSE event: name[{}], id [{}], content[{}]",
-//                         content.choices().get(0).finishReason(),
-//                         content.choices().get(0).index(),
-//                         content.choices().get(0).delta().content()));
-//
-//        return eventStream;
-
         return openAICompletionService.requestCompletion(request);
     }
 }
