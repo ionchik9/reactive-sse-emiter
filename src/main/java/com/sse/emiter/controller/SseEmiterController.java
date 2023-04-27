@@ -4,6 +4,7 @@ import com.sse.emiter.model.MessageRequest;
 import com.sse.emiter.service.OpenAICompletionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -41,7 +42,7 @@ public class SseEmiterController {
         return emitter;
     }
 
-    @GetMapping("/gpt")
+    @PostMapping("/stream-gpt")
     public SseEmitter streamSse(MessageRequest request) {
         SseEmitter emitter = new SseEmitter();
         ExecutorService executorService = Executors.newSingleThreadExecutor();
