@@ -3,6 +3,7 @@ package com.sse.emiter.client;
 import com.sse.emiter.model.GptResponse;
 import com.sse.emiter.model.MessageRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -15,16 +16,26 @@ import java.util.Map;
 @Slf4j
 public class OpenAiReactiveClient {
 
+    @Value("${open-ai.key}")
+    private String openAiKey;
+
+    @Value("${open-ai.url}")
+    private String openAiUrl;
+
+    @Value("${open-ai.completion-url}")
+    private String openAiCompletionUrl;
+
     public Flux<GptResponse> requestCompletion(MessageRequest request) {
 
-        WebClient client = WebClient.create("http://localhost:8080/sse-server");
+        WebClient client = WebClient.create(openAiUrl);
 
         ParameterizedTypeReference<GptResponse> type
                 = new ParameterizedTypeReference<>() {
         };
 
         var eventStream = client.post()
-                .uri("/stream-gpt")
+                .uri(openAiCompletionUrl)
+                .header("Authorization", "Bearer " + openAiKey)
                 .body(BodyInserters.fromValue(Map.of("content", request.content())))
                 .retrieve()
                 .bodyToFlux(type)
