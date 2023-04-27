@@ -7,10 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -52,7 +49,7 @@ public class SseEmiterController {
     }
 
     @PostMapping(value = "/stream-gpt-react", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<GptResponse> streamSse(MessageRequest request) {
+    public Flux<GptResponse> streamSse(@RequestBody MessageRequest request) {
 
 		WebClient client = WebClient.create("http://localhost:8080/sse-server");
 
@@ -62,7 +59,7 @@ public class SseEmiterController {
 
          var eventStream = client.post()
                 .uri("/stream-gpt")
-                .body(BodyInserters.fromValue(Map.of("content", request)))
+                .body(BodyInserters.fromValue(Map.of("content", request.content())))
                 .retrieve()
                 .bodyToFlux(type)
                  .doOnNext(content -> log.info("Received SSE event: name[{}], id [{}], content[{}]",
